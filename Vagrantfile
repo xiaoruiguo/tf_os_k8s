@@ -5,6 +5,21 @@
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
+unless Vagrant.has_plugin?("vagrant-disksize")
+    puts 'Installing vagrant-disksize Plugin...'
+    system('vagrant plugin install vagrant-disksize')
+end
+ 
+unless Vagrant.has_plugin?("vagrant-vbguest")
+    puts 'Installing vagrant-vbguest Plugin...'
+    system('vagrant plugin install vagrant-vbguest')
+end
+ 
+unless Vagrant.has_plugin?("vagrant-reload")
+    puts 'Installing vagrant-reload Plugin...'
+    system('vagrant plugin install vagrant-reload')
+end
+
 Vagrant.configure("2") do |config|
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
@@ -75,12 +90,13 @@ Vagrant.configure("2") do |config|
             apt-get upgrade -y
             apt-get install virtualbox-guest-additions-iso -y
           SHELL
+          subconfig.vm.provision :reload
     end
       
     (1..1).each do |i|
          config.vm.define "node#{i}" do |subconfig|
          subconfig.vm.box = "ubuntu/bionic64"
-         buonfig.disksize.size = "40"
+         subconfig.disksize.size = "40"
          subconfig.vm.network "private_network", ip: "192.168.33.10#{i}"
           subconfig.vm.provider "virtualbox" do |vb|
            vb.memory = "4096"
@@ -94,6 +110,7 @@ Vagrant.configure("2") do |config|
             apt-get upgrade -y
             apt-get install virtualbox-guest-additions-iso -y
           SHELL
+          subconfig.vm.provision :reload
          end
     end
 
